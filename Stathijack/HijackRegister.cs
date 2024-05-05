@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace Stathijack
 {
-    public class HijackRegister
+    public class HijackRegister : IDisposable
     {
-        private readonly Dictionary<Type, Type> _hijackMapping = new();
+        private readonly List<MethodReplacementResult> _hijackedMethods = new();
         private readonly IMethodMatcher _methodMatcher;
 
         public HijackRegister() : this(new MethodMatcher())
@@ -16,7 +16,7 @@ namespace Stathijack
         internal HijackRegister(IMethodMatcher methodMatcher)
         {
             _methodMatcher = methodMatcher;
-        }
+        }        
 
         /// <summary>
         /// Marks a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
@@ -36,13 +36,21 @@ namespace Stathijack
         /// <param name="hijacker">The fake class to redirect calls to</param>
         /// <param name="bindingFlags">Binding flags used to find the methods in the target class</param>
         public void RegisterHijacker(Type target, Type hijacker, BindingFlags bindingFlags)
-        {
-            _hijackMapping.Add(target, hijacker);
+        {            
             var methodsToHijack = _methodMatcher.MatchMethods(target, hijacker, bindingFlags);
 
             foreach(var info in methodsToHijack)
             {
-                TypeMethodReplacer.Replace(info.targetMethod, info.hijackerMethod);
+                var result = TypeMethodReplacer.Replace(info.targetMethod, info.hijackerMethod);
+                _hijackedMethods.Add(result);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach(var result in _hijackedMethods)
+            {
+                TypeMethodReplacer.RollbackReplacement(result);
             }
         }
     }

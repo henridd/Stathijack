@@ -8,7 +8,7 @@ namespace Stathijack.Replacer
         /// <summary>
         /// Swaps the targetMethod handle for the hijackerMethod one. Does NOT work
         /// </summary>
-        public static unsafe void Replace(MethodInfo targetMethod, MethodInfo hijackerMethod)
+        public static unsafe MethodReplacementResult Replace(MethodInfo targetMethod, MethodInfo hijackerMethod)
         {
             //#if DEBUG
             RuntimeHelpers.PrepareMethod(targetMethod.MethodHandle);
@@ -25,14 +25,28 @@ namespace Stathijack.Replacer
                 tar = classStart + IntPtr.Size * index;
             }
             var inj = hijackerMethod.MethodHandle.Value + 8;
-            Console.WriteLine($"Replacing {targetMethod.DeclaringType.FullName}.{targetMethod.Name} with {hijackerMethod.DeclaringType.FullName}.{hijackerMethod.Name}");
+            var result = new MethodReplacementResult();
 #if DEBUG
             tar = *(IntPtr*)tar + 1;
             inj = *(IntPtr*)inj + 1;
+            result.NewValue = tar;
+            result.OriginalValue = new IntPtr(*(int*)tar);
 
             *(int*)tar = *(int*)inj + (int)(long)inj - (int)(long)tar;
 #else
-            *(IntPtr*)tar = *(IntPtr*)inj;
+            result.NewValue = tar;
+            result.OriginalValue = *(IntPtr*)tar;
+            * (IntPtr*)tar = *(IntPtr*)inj;
+#endif
+            return result;
+        }
+
+        public static unsafe void RollbackReplacement(MethodReplacementResult result)
+        {
+#if DEBUG
+            *(int*)result.NewValue = (int)result.OriginalValue;
+#else
+            *(IntPtr*)result.NewValue = result.OriginalValue;
 #endif
         }
     }
