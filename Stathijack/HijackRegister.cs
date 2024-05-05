@@ -7,15 +7,19 @@ namespace Stathijack
     {
         private readonly List<MethodReplacementResult> _hijackedMethods = new();
         private readonly IMethodMatcher _methodMatcher;
+        private readonly ITypeMethodReplacer _typeMethodReplacer;
 
-        public HijackRegister() : this(new MethodMatcher())
+        public IReadOnlyList<MethodReplacementResult> HijackedMethods => _hijackedMethods;
+
+        public HijackRegister() : this(new MethodMatcher(), new TypeMethodReplacer())
         {
             
         }
 
-        internal HijackRegister(IMethodMatcher methodMatcher)
+        internal HijackRegister(IMethodMatcher methodMatcher, ITypeMethodReplacer typeMethodReplacer)
         {
             _methodMatcher = methodMatcher;
+            _typeMethodReplacer = typeMethodReplacer;
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace Stathijack
 
             foreach(var info in methodsToHijack)
             {
-                var result = TypeMethodReplacer.Replace(info.targetMethod, info.hijackerMethod);
+                var result = _typeMethodReplacer.Replace(info.targetMethod, info.hijackerMethod);
                 _hijackedMethods.Add(result);
             }
         }
@@ -55,7 +59,7 @@ namespace Stathijack
         {
             foreach(var result in _hijackedMethods)
             {
-                TypeMethodReplacer.RollbackReplacement(result);
+                _typeMethodReplacer.RollbackReplacement(result);
             }
         }
     }

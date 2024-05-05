@@ -15,6 +15,9 @@ namespace Stathijack
                 if (methodToReplace == null)
                     continue;
 
+                if (methodToReplace.ReturnParameter.ParameterType != method.ReturnParameter.ParameterType)
+                    continue;
+
                 matchedMethods.Add(new MethodReplacementMapping(method, methodToReplace));
             }
 

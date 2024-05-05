@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 
 namespace Stathijack.Replacer
 {
-    public static class TypeMethodReplacer
+    public class TypeMethodReplacer : ITypeMethodReplacer
     {
         /// <summary>
         /// Swaps the targetMethod handle for the hijackerMethod one. Does NOT work
         /// </summary>
-        public static unsafe MethodReplacementResult Replace(MethodInfo targetMethod, MethodInfo hijackerMethod)
+        public unsafe MethodReplacementResult Replace(MethodInfo targetMethod, MethodInfo hijackerMethod)
         {
             //#if DEBUG
             RuntimeHelpers.PrepareMethod(targetMethod.MethodHandle);
@@ -41,7 +41,7 @@ namespace Stathijack.Replacer
             return result;
         }
 
-        public static unsafe void RollbackReplacement(MethodReplacementResult result)
+        public unsafe void RollbackReplacement(MethodReplacementResult result)
         {
 #if DEBUG
             *(int*)result.NewValue = (int)result.OriginalValue;

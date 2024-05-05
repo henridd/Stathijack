@@ -5,7 +5,11 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stathijack", "Stathijack\Stathijack.csproj", "{D951C7D1-D271-4506-B09F-434F1488639E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stathijack.Replacer", "Stathijack.Replacer\Stathijack.Replacer.csproj", "{07BC4CC8-B36C-4F62-A525-A4EBEDC118CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stathijack.Replacer", "Stathijack.Replacer\Stathijack.Replacer.csproj", "{07BC4CC8-B36C-4F62-A525-A4EBEDC118CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BB84258D-BEB4-4E14-9AD5-31ACB396234A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stathijack.UnitTests", "Tests\Stathijack.UnitTests\Stathijack.UnitTests.csproj", "{F7D3204D-CA09-4F6B-9B04-944C1288B1E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +25,16 @@ Global
 		{07BC4CC8-B36C-4F62-A525-A4EBEDC118CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07BC4CC8-B36C-4F62-A525-A4EBEDC118CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07BC4CC8-B36C-4F62-A525-A4EBEDC118CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7D3204D-CA09-4F6B-9B04-944C1288B1E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7D3204D-CA09-4F6B-9B04-944C1288B1E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7D3204D-CA09-4F6B-9B04-944C1288B1E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7D3204D-CA09-4F6B-9B04-944C1288B1E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F7D3204D-CA09-4F6B-9B04-944C1288B1E0} = {BB84258D-BEB4-4E14-9AD5-31ACB396234A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {932A3215-F67B-4AC7-9098-17D087AF1080}

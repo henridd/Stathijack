@@ -15,11 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stathijack.Replacer\Stathijack.Replacer.csproj" PrivateAssets="all"/>
+    <ProjectReference Include="..\Stathijack.Replacer\Stathijack.Replacer.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Stathijack.UnitTests"/>
+    <InternalsVisibleTo Include="Stathijack.UnitTests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <Target Name="GetMyPackageFiles">
