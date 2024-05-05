@@ -2,5 +2,5 @@
 
 namespace Stathijack
 {
-    internal record MethodReplacementMapping(MethodInfo targetMethod, MethodInfo hijackerMethod);
+    public record MethodReplacementMapping(MethodInfo TargetMethod, MethodInfo HijackerMethod);
 }

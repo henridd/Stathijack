@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Stathijack
 {
-    public class HijackRegister : IDisposable
+    public class HijackRegister : IHijackRegister, IDisposable
     {
         private readonly List<MethodReplacementResult> _hijackedMethods = new();
         private readonly IMethodMatcher _methodMatcher;
@@ -22,23 +22,11 @@ namespace Stathijack
             _typeMethodReplacer = typeMethodReplacer;
         }
 
-        /// <summary>
-        /// Register a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
-        /// class, and for every match, will redirect the method calls to the hijacker.
-        /// </summary>
-        /// <param name="target">The original class</param>
-        /// <param name="hijacker">The fake class to redirect calls to</param>
-        /// <param name="bindingFlags">Binding flags used to find the methods in the target class</param>
+        /// <inheritdoc/>
         public void Register(Type target, Type hijacker)
             => Register(target, hijacker, BindingFlags.Static | BindingFlags.Public);
 
-        /// <summary>
-        /// Register a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
-        /// class, and for every match, will redirect the method calls to the hijacker.
-        /// </summary>
-        /// <param name="target">The original class</param>
-        /// <param name="hijacker">The fake class to redirect calls to</param>
-        /// <param name="bindingFlags">Binding flags used to find the methods in the target class</param>
+        /// <inheritdoc/>
         public void Register(Type target, Type hijacker, BindingFlags bindingFlags)
         {
             if (target.Equals(hijacker))
@@ -50,7 +38,17 @@ namespace Stathijack
 
             foreach(var info in methodsToHijack)
             {
-                var result = _typeMethodReplacer.Replace(info.targetMethod, info.hijackerMethod);
+                var result = _typeMethodReplacer.Replace(info.TargetMethod, info.HijackerMethod);
+                _hijackedMethods.Add(result);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Register(IEnumerable<MethodReplacementMapping> mappings)
+        {
+            foreach (var mapping in mappings)
+            {
+                var result = _typeMethodReplacer.Replace(mapping.TargetMethod, mapping.HijackerMethod);
                 _hijackedMethods.Add(result);
             }
         }

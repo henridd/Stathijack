@@ -1,4 +1,5 @@
-﻿using Stathijack.Sample.RealEntities;
+﻿using Stathijack.Mocking;
+using Stathijack.Sample.RealEntities;
 using Stathijack.Sample.TestEntities;
 
 namespace Stathijack.Sample
@@ -6,23 +7,35 @@ namespace Stathijack.Sample
     internal class FactoryUserTests
     {
         [Test]
-        public void test()
+        public void UsingAFakeClass()
         {
             // Arrange
-            ConfigureHijacker();
-            var factoryUser = new FactoryConsumer();
+            var hijacker = new HijackRegister();
+            hijacker.Register(typeof(Factory), typeof(MockFactory));
+            var factoryConsumer = new FactoryConsumer();
 
             // Act
-            var entity = factoryUser.UseFactory();
+            var entity = factoryConsumer.UseFactory();
 
             // Assert
             Assert.That(entity.Name, Is.EqualTo("Fake"));
         }
 
-        private static void ConfigureHijacker()
+        [Test]
+        public void UsingMockingHijacker()
         {
+            // Arrange
+            var fakeEntityName = "Fake";
             var hijacker = new HijackRegister();
-            hijacker.Register(typeof(Factory), typeof(MockFactory));
+            var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+            mockingHijacker.MockAll(nameof(Factory.CreateEntity), () => { return new Entity() { Name = fakeEntityName }; });
+            var factoryConsumer = new FactoryConsumer();
+
+            // Act
+            var entity = factoryConsumer.UseFactory();
+
+            // Assert
+            Assert.That(entity.Name, Is.EqualTo(fakeEntityName));
         }
     }
 }

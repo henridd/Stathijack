@@ -19,17 +19,17 @@ namespace Stathijack.UnitTests.MethodMatcherTests
 
             //// Verify we got SameMethodA()
             Assert.That(matches.Any(x 
-                => x.hijackerMethod.Name == nameof(TypeWithSameMethodsA.SameMethodA) &&
-                x.targetMethod.Name == nameof(TypeWithSameMethodsB.SameMethodA) &&
-                x.hijackerMethod.GetParameters().Length == 0 &&
-                x.targetMethod.GetParameters().Length == 0));
+                => x.HijackerMethod.Name == nameof(TypeWithSameMethodsA.SameMethodA) &&
+                x.TargetMethod.Name == nameof(TypeWithSameMethodsB.SameMethodA) &&
+                x.HijackerMethod.GetParameters().Length == 0 &&
+                x.TargetMethod.GetParameters().Length == 0));
 
             //// Verify we got SameMethodA(bool arg)
             Assert.That(matches.Any(x 
-                => x.hijackerMethod.Name == nameof(TypeWithSameMethodsA.SameMethodA) &&
-                x.targetMethod.Name == nameof(TypeWithSameMethodsB.SameMethodA) &&
-                x.hijackerMethod.GetParameters().Length == 1 &&
-                x.targetMethod.GetParameters().Length == 1));
+                => x.HijackerMethod.Name == nameof(TypeWithSameMethodsA.SameMethodA) &&
+                x.TargetMethod.Name == nameof(TypeWithSameMethodsB.SameMethodA) &&
+                x.HijackerMethod.GetParameters().Length == 1 &&
+                x.TargetMethod.GetParameters().Length == 1));
         }
 
         [Test]
