@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Title>Stathijack</Title>
+    <RepositoryUrl>https://github.com/henridd/Stathijack</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>Enables replacing static classes for fake ones when testing.</Description>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetMyPackageFiles</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stathijack.Replacer\Stathijack.Replacer.csproj" PrivateAssets="all"/>
+  </ItemGroup>
+
+  <Target Name="GetMyPackageFiles">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(OutputPath)Stathijack.Replacer.dll">
+      </BuildOutputInPackage>
+    </ItemGroup>
+  </Target>
+</Project>
