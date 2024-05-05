@@ -18,6 +18,10 @@
     <ProjectReference Include="..\Stathijack.Replacer\Stathijack.Replacer.csproj" PrivateAssets="all"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Stathijack.UnitTests"/>
+  </ItemGroup>
+
   <Target Name="GetMyPackageFiles">
     <ItemGroup>
       <BuildOutputInPackage Include="$(OutputPath)Stathijack.Replacer.dll">

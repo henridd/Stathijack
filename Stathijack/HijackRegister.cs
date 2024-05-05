@@ -16,27 +16,32 @@ namespace Stathijack
         internal HijackRegister(IMethodMatcher methodMatcher)
         {
             _methodMatcher = methodMatcher;
-        }        
+        }
 
         /// <summary>
-        /// Marks a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
+        /// Register a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
         /// class, and for every match, will redirect the method calls to the hijacker.
         /// </summary>
         /// <param name="target">The original class</param>
         /// <param name="hijacker">The fake class to redirect calls to</param>
         /// <param name="bindingFlags">Binding flags used to find the methods in the target class</param>
-        public void RegisterHijacker(Type target, Type hijacker)
-            => RegisterHijacker(target, hijacker, BindingFlags.Static | BindingFlags.Public);
+        public void Register(Type target, Type hijacker)
+            => Register(target, hijacker, BindingFlags.Static | BindingFlags.Public);
 
         /// <summary>
-        /// Marks a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
+        /// Register a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
         /// class, and for every match, will redirect the method calls to the hijacker.
         /// </summary>
         /// <param name="target">The original class</param>
         /// <param name="hijacker">The fake class to redirect calls to</param>
         /// <param name="bindingFlags">Binding flags used to find the methods in the target class</param>
-        public void RegisterHijacker(Type target, Type hijacker, BindingFlags bindingFlags)
-        {            
+        public void Register(Type target, Type hijacker, BindingFlags bindingFlags)
+        {
+            if (target.Equals(hijacker))
+            {
+                throw new ArgumentException("The target and hijacker cannot be the same.");
+            }
+
             var methodsToHijack = _methodMatcher.MatchMethods(target, hijacker, bindingFlags);
 
             foreach(var info in methodsToHijack)

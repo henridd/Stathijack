@@ -22,7 +22,7 @@ namespace Stathijack.Sample
         private static void ConfigureHijacker()
         {
             var hijacker = new HijackRegister();
-            hijacker.RegisterHijacker(typeof(Factory), typeof(MockFactory));
+            hijacker.Register(typeof(Factory), typeof(MockFactory));
         }
     }
 }

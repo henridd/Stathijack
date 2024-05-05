@@ -4,9 +4,9 @@ namespace Stathijack
 {
     internal class MethodMatcher : IMethodMatcher
     {
-        public List<MethodReplacementInfo> MatchMethods(Type target, Type hijacker, BindingFlags bindingFlags)
+        public List<MethodReplacementMapping> MatchMethods(Type target, Type hijacker, BindingFlags bindingFlags)
         {
-            var matchedMethods = new List<MethodReplacementInfo>();
+            var matchedMethods = new List<MethodReplacementMapping>();
 
             foreach (var method in target.GetMethods(bindingFlags))
             {
@@ -15,7 +15,7 @@ namespace Stathijack
                 if (methodToReplace == null)
                     continue;
 
-                matchedMethods.Add(new MethodReplacementInfo(method, methodToReplace));
+                matchedMethods.Add(new MethodReplacementMapping(method, methodToReplace));
             }
 
             return matchedMethods;
