@@ -10,45 +10,36 @@ namespace Stathijack.Mocking
         /// <param name="methodName"></param>
         /// <param name="action"></param>
         public void MockAll(string methodName, Action action)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, action.Method);
-            _hijackRegister.Register(mappings);
-        }
+            => DoMockAll(methodName, action.Method);
 
         public void MockAll<T>(string methodName, Func<T> function)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, function.Method);
-            _hijackRegister.Register(mappings);
-        }
+            => DoMockAll(methodName, function.Method);
 
         public void MockAll<TIn, TOut>(string methodName, Func<TIn, TOut> function)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, function.Method);
-            _hijackRegister.Register(mappings);
-        }
+            => DoMockAll(methodName, function.Method);
 
         public void MockAll<T1, T2, TOut>(string methodName, Func<T1, T2, TOut> function)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, function.Method);
-            _hijackRegister.Register(mappings);
-        }
+            => DoMockAll(methodName, function.Method);
 
         public void MockAll<T1, T2, T3, TOut>(string methodName, Func<T1, T2, T3, TOut> function)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, function.Method);
-            _hijackRegister.Register(mappings);
-        }
+            => DoMockAll(methodName, function.Method);
 
         public void MockAll<T1, T2, T3, T4, TOut>(string methodName, Func<T1, T2, T3, T4, TOut> function)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, function.Method);
-            _hijackRegister.Register(mappings);
-        }
+            => DoMockAll(methodName, function.Method);
 
         public void MockAll<T1, T2, T3, T4, T5, TOut>(string methodName, Func<T1, T2, T3, T4, T5, TOut> function)
+            => DoMockAll(methodName, function.Method);
+
+        private void DoMockAll(string methodName, MethodInfo method)
         {
-            var mappings = CreateMappingForAllMethods(methodName, function.Method);
+            if (string.IsNullOrWhiteSpace(methodName))
+                throw new ArgumentException("Method name cannot be null", nameof(methodName));
+
+            if (method == null)
+                throw new ArgumentNullException("You must provide a method to replace the original method", nameof(method));
+
+            var mappings = CreateMappingForAllMethods(methodName, method);
             _hijackRegister.Register(mappings);
         }
-	}
+    }
 }
