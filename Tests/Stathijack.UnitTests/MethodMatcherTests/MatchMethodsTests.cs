@@ -71,6 +71,25 @@ namespace Stathijack.UnitTests.MethodMatcherTests
             Assert.That(matches.Count, Is.EqualTo(0));
         }
 
+        [Test]
+        public void TypeIsNull_ShouldThrowException()
+        {
+            // Arrange
+            var matcher = new MethodMatcher();
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => matcher.MatchMethods(null, typeof(TypeWithSameMethodsButDifferentReturnTypeB), BindingFlags.Public | BindingFlags.Static));
+        }
+
+        [Test]
+        public void HijackerIsNull_ShouldThrowException()
+        {
+            // Arrange
+            var matcher = new MethodMatcher();
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => matcher.MatchMethods(typeof(TypeWithSameMethodsButDifferentReturnTypeB), null, BindingFlags.Public | BindingFlags.Static));
+        }
 
         private static class TypeWithSameMethodsA
         {

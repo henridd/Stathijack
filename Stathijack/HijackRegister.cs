@@ -46,6 +46,9 @@ namespace Stathijack
         /// <inheritdoc/>
         public void Register(IEnumerable<MethodReplacementMapping> mappings)
         {
+            if(mappings == null)
+                throw new ArgumentNullException("A valid list of mappings must be provided", nameof(mappings));
+
             foreach (var mapping in mappings)
             {
                 var result = _typeMethodReplacer.Replace(mapping.TargetMethod, mapping.HijackerMethod);

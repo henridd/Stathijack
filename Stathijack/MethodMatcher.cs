@@ -6,6 +6,12 @@ namespace Stathijack
     {
         public List<MethodReplacementMapping> MatchMethods(Type target, Type hijacker, BindingFlags bindingFlags)
         {
+            if(target == null)
+                throw new ArgumentNullException("You must specify the target type", nameof(target));
+
+            if (hijacker == null)
+                throw new ArgumentNullException("You must specify the hijacker type", nameof(hijacker));
+
             var matchedMethods = new List<MethodReplacementMapping>();
 
             foreach (var method in target.GetMethods(bindingFlags))
