@@ -13,18 +13,6 @@ namespace Stathijack.Mocking
             _hijackRegister = hijackRegister;
         }
 
-        public void MockSpecific(string methodName, IEnumerable<Type> parameterTypes, Action action)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, parameterTypes.ToArray(), action.Method);
-            _hijackRegister.Register(mappings);
-        }
-
-        public void MockSpecific<T>(string methodName, IEnumerable<Type> parameterTypes, Func<T> function)
-        {
-            var mappings = CreateMappingForAllMethods(methodName, parameterTypes.ToArray(), function.Method);
-            _hijackRegister.Register(mappings);
-        }
-
         private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, MethodInfo replacement)
             => CreateMappingForAllMethods(methodName, null, replacement);
 
