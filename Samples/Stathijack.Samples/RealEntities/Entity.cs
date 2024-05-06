@@ -1,4 +1,4 @@
-﻿namespace Stathijack.Sample.RealEntities
+﻿namespace Stathijack.Samples.RealEntities
 {
     public class Entity
     {

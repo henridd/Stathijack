@@ -50,18 +50,5 @@ namespace Stathijack.Mocking
             var mappings = CreateMappingForAllMethods(methodName, function.Method);
             _hijackRegister.Register(mappings);
         }
-
-		private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, MethodInfo replacement)
-		{
-			var mappings = new List<MethodReplacementMapping>();
-			foreach (var method in _target.GetMethods())
-			{
-				if (method.Name == methodName)
-				{
-					mappings.Add(new MethodReplacementMapping(method, replacement));
-				}
-			}
-			return mappings;
-		}
 	}
 }
