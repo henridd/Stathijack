@@ -8,13 +8,26 @@ namespace Stathijack.UnitTests.Mocking.MockingHijackerTests
         private Mock<IHijackRegister> _hijackRegisterMock;
 
         [Test]
-        public void ShouldCreateMappingForEveryMethod()
+        public void ShouldCreateMappingForEveryMethod_ActionSignature()
         {
             // Arrange
             var mockingHijacker = CreateMockingHijacker();
 
             // Act
             mockingHijacker.MockAll(nameof(TypeWithSameMethods.SameMethod), () => { });
+
+            // Assert
+            _hijackRegisterMock.Verify(x => x.Register(It.Is<IEnumerable<MethodReplacementMapping>>(x => x.Count() == 2)));
+        }
+
+        [Test]
+        public void ShouldCreateMappingForEveryMethod_FuncSignature()
+        {
+            // Arrange
+            var mockingHijacker = CreateMockingHijacker();
+
+            // Act
+            mockingHijacker.MockAll(nameof(TypeWithSameMethods.SameMethod), () => { return string.Empty; });
 
             // Assert
             _hijackRegisterMock.Verify(x => x.Register(It.Is<IEnumerable<MethodReplacementMapping>>(x => x.Count() == 2)));
