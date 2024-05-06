@@ -4,6 +4,11 @@ namespace Stathijack.Mocking
 {
     public partial class MockingHijacker
     {
+        /// <summary>
+        /// Hijacks the method that matches the methodName and the parameterTypes.
+        /// </summary>
+        /// <param name="methodName">The name of the method</param>
+        /// <param name="action">The action to replace the original method</param>
         public void MockSpecific(string methodName, IEnumerable<Type> parameterTypes, Action action)
             => DoMockSpecific(methodName, parameterTypes, action.Method);
 

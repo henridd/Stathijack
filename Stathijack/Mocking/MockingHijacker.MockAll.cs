@@ -7,8 +7,8 @@ namespace Stathijack.Mocking
         /// <summary>
         /// Hijacks every method that matches the methodName in the target type.
         /// </summary>
-        /// <param name="methodName"></param>
-        /// <param name="action"></param>
+        /// <param name="methodName">The name of the method</param>
+        /// <param name="action">The action to replace the original method</param>
         public void MockAll(string methodName, Action action)
             => DoMockAll(methodName, action.Method);
 
