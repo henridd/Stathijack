@@ -25,6 +25,6 @@ namespace Stathijack
         /// <summary>
         /// Register a the provided mappings for hijacking.
         /// </summary>
-        void Register(IEnumerable<MethodReplacementMapping> mappings);
+        void Register(IEnumerable<MethodReplacementMapping> mappings, object target);
     }
 }

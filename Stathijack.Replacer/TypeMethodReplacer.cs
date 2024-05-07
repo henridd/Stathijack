@@ -6,48 +6,30 @@ namespace Stathijack.Replacer
     public class TypeMethodReplacer : ITypeMethodReplacer
     {
         /// <summary>
-        /// Swaps the targetMethod handle for the hijackerMethod one. Does NOT work
+        /// Swaps the targetMethod handle for the hijackerMethod one
+        /// 
+        /// Known issue: will not work if the method has been called at least once before hijacking. No exception will be thrown, but the original method will be executed.
+        /// This also affects disposing, since we cannot put back the original behavior
         /// </summary>
         public unsafe MethodReplacementResult Replace(MethodInfo targetMethod, MethodInfo hijackerMethod)
         {
-            //#if DEBUG
-            RuntimeHelpers.PrepareMethod(targetMethod.MethodHandle);
-            RuntimeHelpers.PrepareMethod(hijackerMethod.MethodHandle);
-            //#endif
+            long* hijackerMethodPointer = (long*)hijackerMethod.MethodHandle.Value.ToPointer() + 1;
+            long* targetMethodPointer = (long*)targetMethod.MethodHandle.Value.ToPointer() + 1;
 
-            IntPtr tar = targetMethod.MethodHandle.Value;
-            if (!targetMethod.IsVirtual)
-                tar += 8;
-            else
+            var result = new MethodReplacementResult()
             {
-                var index = (int)(((*(long*)tar) >> 32) & 0xFF);
-                var classStart = *(IntPtr*)(targetMethod.DeclaringType.TypeHandle.Value + (IntPtr.Size == 4 ? 40 : 64));
-                tar = classStart + IntPtr.Size * index;
-            }
-            var inj = hijackerMethod.MethodHandle.Value + 8;
-            var result = new MethodReplacementResult();
-#if DEBUG
-            tar = *(IntPtr*)tar + 1;
-            inj = *(IntPtr*)inj + 1;
-            result.NewValue = tar;
-            result.OriginalValue = new IntPtr(*(int*)tar);
+                Location = targetMethodPointer,
+                OriginalValue = (long*)targetMethod.MethodHandle.Value.ToPointer()+1
+            };
 
-            *(int*)tar = *(int*)inj + (int)(long)inj - (int)(long)tar;
-#else
-            result.NewValue = tar;
-            result.OriginalValue = *(IntPtr*)tar;
-            * (IntPtr*)tar = *(IntPtr*)inj;
-#endif
+            *targetMethodPointer = *hijackerMethodPointer;
+
             return result;
         }
 
         public unsafe void RollbackReplacement(MethodReplacementResult result)
         {
-#if DEBUG
-            *(int*)result.NewValue = (int)result.OriginalValue;
-#else
-            *(IntPtr*)result.NewValue = result.OriginalValue;
-#endif
+            *result.Location = *result.OriginalValue;
         }
     }
 }

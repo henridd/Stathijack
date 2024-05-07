@@ -1,4 +1,4 @@
-﻿namespace Stathijack.Samples.RealEntities
+﻿namespace Stathijack.IntegrationTests.RealEntities
 {
     public static class Factory
     {

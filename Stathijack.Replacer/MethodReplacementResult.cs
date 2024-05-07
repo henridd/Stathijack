@@ -1,8 +1,10 @@
-﻿namespace Stathijack.Replacer
+﻿using System.Reflection;
+
+namespace Stathijack.Replacer
 {
-    public class MethodReplacementResult
+    public unsafe struct MethodReplacementResult
     {
-        public IntPtr OriginalValue { get; set; }
-        public IntPtr NewValue { get; set; }
+        public long* OriginalValue { get; set; }
+        public long* Location { get; set; }
     }
 }

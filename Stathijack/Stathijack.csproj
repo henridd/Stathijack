@@ -21,6 +21,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Stathijack.UnitTests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="Stathijack.Dynamic" />
   </ItemGroup>
 
   <Target Name="GetMyPackageFiles">
