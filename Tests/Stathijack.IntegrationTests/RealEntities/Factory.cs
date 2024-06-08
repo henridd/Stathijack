@@ -12,5 +12,8 @@
 
         public static Entity CreateEntity(string name, int id)
             => new Entity() { Name = name, Id = id };
+
+        public static Entity CreateEntity(CreateFactoryPayload createFactoryPayload)
+            => new Entity() { Name = createFactoryPayload.Name, Id = createFactoryPayload.Id };
     }
 }

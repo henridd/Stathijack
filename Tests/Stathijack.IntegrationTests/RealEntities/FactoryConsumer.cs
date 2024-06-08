@@ -10,5 +10,8 @@
 
         public Entity UseFactory(string name, int id)
             => Factory.CreateEntity(name, id);
+
+        public Entity UseFactory(CreateFactoryPayload createFactoryPayload)
+            => Factory.CreateEntity(createFactoryPayload);
     }
 }

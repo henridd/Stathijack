@@ -6,7 +6,7 @@ namespace Stathijack.IntegrationTests
     internal class MockMethodTests
     {
         [Test]
-        public void UsingMockingHijacker_MockMethod_NoMatch()
+        public void ParametersDoNotMatch_ShouldNotReplace()
         {
             // Arrange
             var expectedName = "The actual name";
@@ -23,7 +23,7 @@ namespace Stathijack.IntegrationTests
         }
 
         [Test]
-        public void UsingMockingHijacker_MockMethodWithNoParameters_SuccessfulMatch()
+        public void ParametersMatch_ShouldReplace()
         {
             // Arrange
             const string expectedName = "The actual name"; // Note that it must be const
@@ -40,7 +40,7 @@ namespace Stathijack.IntegrationTests
         }
 
         [Test]
-        public void UsingMockingHijacker_MockMethodWithSeveralParameters_SuccessfulMatch()
+        public void ParametersMatch_SeveralParameters_ShouldReplace()
         {
             // Arrange
             const string expectedName = "The actual name"; // Note that it must be const
@@ -59,7 +59,7 @@ namespace Stathijack.IntegrationTests
         }
 
         [Test]
-        public void UsingMockingHijacker_MockMethodWithSeveralParameters_UsingProvidedValues()
+        public void ParameterValuesShouldBeAccessibleInTheFunc()
         {
             // Arrange
             const string namePrefix = "FAKE"; // Note that it must be const
@@ -75,6 +75,31 @@ namespace Stathijack.IntegrationTests
 
             // Assert
             Assert.That(entity.Name, Is.EqualTo(namePrefix + expectedName));
+        }
+
+        [Test]
+        public void ShouldWorkWithStructs()
+        {
+            // Arrange
+            const string namePrefix = "FAKE"; // Note that it must be const
+            const string expectedName = "The actual name"; // Note that it must be const
+
+            using var hijacker = new HijackRegister();
+            var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+            mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (CreateFactoryPayload payload) => { return new Entity() { Name = namePrefix+payload.Name}; });
+            var factoryConsumer = new FactoryConsumer();
+
+            // Act
+            var entity = factoryConsumer.UseFactory(new CreateFactoryPayload(1, expectedName));
+
+            // Assert
+            Assert.That(entity.Name, Is.EqualTo(namePrefix+expectedName));
+        }
+
+        private class FakeClass
+        {
+            public string Name { get; set; }
+            public int SomeValue { get; set; }
         }
     }
 }
