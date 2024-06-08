@@ -20,3 +20,38 @@ There are currently two main issues in this repository:
 Once you have mocked the static class, the original behavior is lost. There is an experimental feature (`HijackRegister.EnableExperimentalDefaultInvoking`) which partially supports it, but it is far from being usable.
 ### Unable to mock a method if it has been called already
 If you have executed the method before adding the mock, it won't be possible to set up any mocks until the end of the test run.
+
+There is also a weird behavior that is better shown than explained. Take the following sitatuion:
+```csharp
+[Test]
+public void Test1()
+{
+    using var hijacker = new HijackRegister();
+    var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+    mockingHijacker.MockMethod(nameof(Factory.Create), (string _) => { return "Fake result"; });
+    var test = new FactoryConsumer().Consume("Real result");
+    var test2 = Factory.Create("Real result");
+}
+
+public class FactoryConsumer
+{
+    public string Consume(string teste)
+    {
+        return Factory.Create(teste);
+    }
+}
+
+public static class Factory
+{
+    public static string Create(string teste)
+    {
+        return teste;
+    }
+}
+```
+When you execute this test, both "test" and "test2" variables will have "Fake result" as their value. However, if you swap their order to something like this:
+```csharp
+var test = new FactoryConsumer().Consume("Real result");
+var test2 = Factory.Create("Real result");
+```
+the mocking won't be applied at all, and their value will be "Real result".
