@@ -16,7 +16,7 @@ namespace Stathijack.Mocking
         private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, MethodInfo replacement)
             => CreateMappingForAllMethods(methodName, null, replacement);
 
-        private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, Type[]? types, MethodInfo replacement)
+        private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, Type[]? parameterTypes, MethodInfo replacement)
         {
             var mappings = new List<MethodReplacementMapping>();
             foreach (var method in _target.GetMethods())
@@ -24,7 +24,7 @@ namespace Stathijack.Mocking
                 if (method.Name != methodName)
                     continue;
 
-                if (types != null && !types.SequenceEqual(method.GetParameters().Select(x => x.ParameterType)))
+                if (parameterTypes != null && !parameterTypes.SequenceEqual(method.GetParameters().Select(x => x.ParameterType)))
                     continue;
 
                 mappings.Add(new MethodReplacementMapping(method, replacement));

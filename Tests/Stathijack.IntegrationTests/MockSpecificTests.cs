@@ -12,7 +12,7 @@ namespace Stathijack.IntegrationTests
             var expectedName = "The actual name";
             using var hijacker = new HijackRegister();
             var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), Array.Empty<Type>(), () => { return new Entity() { Name = "Whoops this wont match" }; });
+            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), () => { return new Entity() { Name = "Whoops this wont match" }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
@@ -29,7 +29,7 @@ namespace Stathijack.IntegrationTests
             const string expectedName = "The actual name"; // Note that it must be const
             using var hijacker = new HijackRegister();
             var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), null, () => { return new Entity() { Name = expectedName }; });
+            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), () => { return new Entity() { Name = expectedName }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
@@ -47,7 +47,7 @@ namespace Stathijack.IntegrationTests
             const int expectedId = 10;
             using var hijacker = new HijackRegister();
             var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), [typeof(string), typeof(int)], (string _, int _) => { return new Entity() { Name = expectedName, Id = expectedId }; });
+            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), (string _, int _) => { return new Entity() { Name = expectedName, Id = expectedId }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
@@ -67,7 +67,7 @@ namespace Stathijack.IntegrationTests
 
             using var hijacker = new HijackRegister();
             var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), [typeof(string), typeof(int)], (string name, int _) => { return new Entity() { Name = namePrefix + expectedName }; });
+            mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), (string name, int _) => { return new Entity() { Name = namePrefix + expectedName }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
