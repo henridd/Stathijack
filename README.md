@@ -17,6 +17,6 @@ For more information and usages, check the Samples project.
 ## Known issues
 There are currently two main issues in this repository:
 ### Unable to restore the original behavior
-Once you have mocked the static class, the original behavior is lost. There is an experimental feature (`HijackRegister.EnableExperimentalDefaultInvoking`) which partially suports it, but it is far from being usable.
+Once you have mocked the static class, the original behavior is lost. There is an experimental feature (`HijackRegister.EnableExperimentalDefaultInvoking`) which partially supports it, but it is far from being usable.
 ### Unable to mock a method if it has been called already
 If you have executed the method before adding the mock, it won't be possible to set up any mocks until the end of the test run.
