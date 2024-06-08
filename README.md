@@ -24,7 +24,7 @@ Once you have mocked the static class, the original behavior is lost. There is a
 ### Unable to mock a method if it has been called already
 If you have executed the method before adding the mock, it won't be possible to set up any mocks until the end of the test run.
 
-There is also a weird behavior that is better shown than explained. Take the following sitatuion:
+There is also a weird behavior that is better shown than explained. Take the following situation:
 ```csharp
 [Test]
 public void Test1()
