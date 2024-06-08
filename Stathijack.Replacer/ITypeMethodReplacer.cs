@@ -4,6 +4,6 @@ namespace Stathijack.Replacer
 {
     public interface ITypeMethodReplacer
     {
-        MethodReplacementResult Replace(MethodInfo targetMethod, MethodInfo hijackerMethod);
+        void Replace(MethodInfo targetMethod, MethodInfo hijackerMethod);
     }
 }
