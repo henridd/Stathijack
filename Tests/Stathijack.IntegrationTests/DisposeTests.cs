@@ -19,7 +19,7 @@ namespace Stathijack.IntegrationTests
             using (var hijacker = new HijackRegister())
             {
                 var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-                mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), (string name, int id) => { return new Entity() { Name = firstExpectedName }; });
+                mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (string name, int id) => { return new Entity() { Name = firstExpectedName }; });
 
                 var firstEntity = factoryConsumer.UseFactory("Random value that will not be used", 1);
                 Assert.That(firstEntity.Name, Is.EqualTo(firstExpectedName));
@@ -29,7 +29,7 @@ namespace Stathijack.IntegrationTests
             using (var hijacker = new HijackRegister())
             {
                 var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-                mockingHijacker.MockSpecific(nameof(Factory.CreateEntity),(string name, int id) => { return new Entity() { Name = secondExpectedName }; });
+                mockingHijacker.MockMethod(nameof(Factory.CreateEntity),(string name, int id) => { return new Entity() { Name = secondExpectedName }; });
 
                 var secondEntity = factoryConsumer.UseFactory("Random value that will not be used", 1);
                 Assert.That(secondEntity.Name, Is.EqualTo(secondExpectedName));
@@ -50,7 +50,7 @@ namespace Stathijack.IntegrationTests
             {
                 hijacker.EnableExperimentalDefaultInvoking = true;
                 var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-                mockingHijacker.MockSpecific(nameof(Factory.CreateEntity), (string name, int id) => { return new Entity() { Name = firstExpectedName }; });
+                mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (string name, int id) => { return new Entity() { Name = firstExpectedName }; });
 
                 var firstEntity = factoryConsumer.UseFactory("Random value that will not be used", 1);
                 Assert.That(firstEntity.Name, Is.EqualTo(firstExpectedName));

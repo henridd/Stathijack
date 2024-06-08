@@ -75,7 +75,6 @@ namespace Stathijack
             var dynamicNamespaceFullName = invokeMethodInfo.DeclaringType.FullName;
             _typeMethodReplacer.Replace(targetMethod, invokeMethodInfo);
 
-            // TODO: Create a method to get only the name of the dynamic type, without actually creating it
             if (HijackedMethodController.MethodHasBeenHijacked(dynamicNamespaceFullName))
             {
                 HijackedMethodController.AppendHijack(hijackerMethod,target, dynamicNamespaceFullName);
