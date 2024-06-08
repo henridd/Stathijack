@@ -8,6 +8,7 @@ namespace Stathijack
     {
         private readonly IMethodMatcher _methodMatcher;
         private readonly ITypeMethodReplacer _typeMethodReplacer;
+        private readonly IDynamicTypeFactory _dynamicTypeFactory;
         private HashSet<string> _hijackedClasses = new();
 
         /// <summary>
@@ -17,15 +18,16 @@ namespace Stathijack
         /// </summary>
         public bool EnableExperimentalDefaultInvoking { get; set; }
 
-        public HijackRegister() : this(new MethodMatcher(), new TypeMethodReplacer())
+        public HijackRegister() : this(new MethodMatcher(), new TypeMethodReplacer(), new DynamicTypeFactory())
         {
 
         }
 
-        internal HijackRegister(IMethodMatcher methodMatcher, ITypeMethodReplacer typeMethodReplacer)
+        internal HijackRegister(IMethodMatcher methodMatcher, ITypeMethodReplacer typeMethodReplacer, IDynamicTypeFactory dynamicTypeFactory)
         {
             _methodMatcher = methodMatcher;
             _typeMethodReplacer = typeMethodReplacer;
+            _dynamicTypeFactory = dynamicTypeFactory;
         }
 
         /// <inheritdoc/>
@@ -68,7 +70,7 @@ namespace Stathijack
 
         private void HijackMethod(MethodInfo targetMethod, MethodInfo hijackerMethod, object? target)
         {
-            var hijackType = new DynamicTypeFactory().GenerateMockTypeForMethod(targetMethod, HijackedMethodController.GetRootMethodInfo());
+            var hijackType = _dynamicTypeFactory.GenerateMockTypeForMethod(targetMethod, HijackedMethodController.GetRootMethodInfo());
             var invokeMethodInfo = hijackType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Static);
             var dynamicNamespaceFullName = invokeMethodInfo.DeclaringType.FullName;
             _typeMethodReplacer.Replace(targetMethod, invokeMethodInfo);
@@ -80,10 +82,9 @@ namespace Stathijack
                 return;
             }
 
-            var invokeDefaultMethodInfo = hijackType.GetMethod("InvokeDefault", BindingFlags.Public | BindingFlags.Static);
-
             if (EnableExperimentalDefaultInvoking)
             {
+                var invokeDefaultMethodInfo = hijackType.GetMethod("InvokeDefault", BindingFlags.Public | BindingFlags.Static);
                 HijackedMethodController.AddNewHijack(invokeDefaultMethodInfo, hijackerMethod, target, dynamicNamespaceFullName);
             }
             else

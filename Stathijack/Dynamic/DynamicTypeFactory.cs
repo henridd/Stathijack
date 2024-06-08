@@ -3,9 +3,9 @@ using System.Reflection.Emit;
 
 namespace Stathijack.Dynamic
 {
-    internal class DynamicTypeFactory
+    internal class DynamicTypeFactory : IDynamicTypeFactory
     {
-        internal Type GenerateMockTypeForMethod(MethodInfo targetMethod, MethodInfo hijackMethod)
+        public Type GenerateMockTypeForMethod(MethodInfo targetMethod, MethodInfo hijackMethod)
         {
             var typeBuilder = InitializeBuilder(targetMethod);
 

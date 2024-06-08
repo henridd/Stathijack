@@ -26,10 +26,5 @@ namespace Stathijack.Replacer
 
             return result;
         }
-
-        public unsafe void RollbackReplacement(MethodReplacementResult result)
-        {
-            *result.Location = *result.OriginalValue;
-        }
     }
 }

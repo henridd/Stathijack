@@ -17,6 +17,7 @@ namespace Stathijack.UnitTests.HijackRegisterTests
             };
 
             MethodMatcherMock.Setup(x => x.MatchMethods(typeof(FakeTypeA), typeof(FakeTypeB), It.IsAny<BindingFlags>())).Returns(matchedMethods);
+            DynamicTypeFactoryMock.Setup(x => x.GenerateMockTypeForMethod(It.IsAny<MethodInfo>(), It.IsAny<MethodInfo>())).Returns(typeof(FakeCloneClass));
 
             // Act
             hijacker.Register(typeof(FakeTypeA), typeof(FakeTypeB));
