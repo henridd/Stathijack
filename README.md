@@ -14,6 +14,9 @@ mockingHijacker.MockMethod("MethodName", (string nameOfTheParameter) =>
 ```
 For more information and usages, check the Samples project.
 
+## Contributing
+If you are in need of new functionalities, feel free to raise an issue. I'd also gladly accept help regarding the issues mentioned in the 'Known issues' section.
+
 ## Known issues
 There are currently two main issues in this repository:
 ### Unable to restore the original behavior
