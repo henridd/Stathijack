@@ -23,26 +23,6 @@ namespace Stathijack.Samples
         }
         
         /// <summary>
-        /// This scenario uses the MockAll, a lazy approach if you just wanna run some tests.
-        /// </summary>
-        [Test]
-        public void UsingMockingHijacker_MockAll()
-        {
-            // Arrange
-            const string fakeEntityName = "Fake"; // Note that it must be const
-            using var hijacker = new HijackRegister();
-            var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockAll(nameof(Factory.CreateEntity), () => { return new Entity() { Name = fakeEntityName }; });
-            var factoryConsumer = new FactoryConsumer();
-
-            // Act
-            var entity = factoryConsumer.UseFactory();
-
-            // Assert
-            Assert.That(entity.Name, Is.EqualTo(fakeEntityName));
-        }
-
-        /// <summary>
         /// In this example, the mock shouldn't work, as we didn't match the parameters.
         /// </summary>
         [Test]
