@@ -10,8 +10,13 @@
     <Title>Stathijack</Title>
     <RepositoryUrl>https://github.com/henridd/Stathijack</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Description>Enables replacing static classes for fake ones when testing.</Description>
+    <Description>Enables mocking replacing static classes when testing.</Description>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetMyPackageFiles</TargetsForTfmSpecificBuildOutput>
+    <Authors>Henrique Dalcin Dalmas</Authors>
+    <Company>Into dotNET</Company>
+    <PackageProjectUrl>https://github.com/henridd/Stathijack</PackageProjectUrl>
+    <PackageTags>mocking;testing;static;unittest</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +27,13 @@
     <InternalsVisibleTo Include="Stathijack.UnitTests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     <InternalsVisibleTo Include="Stathijack.Dynamic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="GetMyPackageFiles">
