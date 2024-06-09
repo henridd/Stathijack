@@ -12,7 +12,7 @@ mockingHijacker.MockMethod("MethodName", (string nameOfTheParameter) =>
   //Some logic
 });
 ```
-For more information and usages, check the Samples project.
+For more information and usages, check the Samples project and this article: https://intodot.net/mocking-static-classes-in-net-introducing-stathijack/
 
 ## Contributing
 If you are in need of new functionalities, feel free to raise an issue. I'd also gladly accept help regarding the issues mentioned in the 'Known issues' section.
