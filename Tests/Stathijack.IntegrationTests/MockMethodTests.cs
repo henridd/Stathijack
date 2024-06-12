@@ -40,6 +40,37 @@ namespace Stathijack.IntegrationTests
         }
 
         [Test]
+        public void WhenUsingConstructorWithoutHijackRegister_ParametersMatch_ShouldReplace()
+        {
+            // Arrange
+            const string expectedName = "The actual name"; // Note that it must be const
+            using var mockingHijacker = new MockingHijacker(typeof(Factory));
+            mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = expectedName }; });
+            var factoryConsumer = new FactoryConsumer();
+
+            // Act
+            var entity = factoryConsumer.UseFactory();
+
+            // Assert
+            Assert.That(entity.Name, Is.EqualTo(expectedName));
+        }
+
+        [Test]
+        public void ShouldNotGoBananasWhenCallingDisposeTwice()
+        {
+            const string expectedName = "Random value"; // Note that it must be const
+
+            Assert.DoesNotThrow(() =>
+            {
+                using var hijacker = new HijackRegister();
+                using var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+                mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = expectedName }; });
+                var factoryConsumer = new FactoryConsumer();
+                var entity = factoryConsumer.UseFactory();
+            });
+        }
+
+        [Test]
         public void ParametersMatch_SeveralParameters_ShouldReplace()
         {
             // Arrange
@@ -86,14 +117,14 @@ namespace Stathijack.IntegrationTests
 
             using var hijacker = new HijackRegister();
             var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (CreateFactoryPayload payload) => { return new Entity() { Name = namePrefix+payload.Name}; });
+            mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (CreateFactoryPayload payload) => { return new Entity() { Name = namePrefix + payload.Name }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
             var entity = factoryConsumer.UseFactory(new CreateFactoryPayload(1, expectedName));
 
             // Assert
-            Assert.That(entity.Name, Is.EqualTo(namePrefix+expectedName));
+            Assert.That(entity.Name, Is.EqualTo(namePrefix + expectedName));
         }
 
         private class FakeClass

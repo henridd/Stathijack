@@ -2,15 +2,31 @@
 
 namespace Stathijack.Mocking
 {
-    public partial class MockingHijacker
+    public partial class MockingHijacker : IDisposable
     {
         private readonly Type _target;
         private readonly IHijackRegister _hijackRegister;
 
+        /// <summary>
+        /// Creates a new MockingHijacker for the provided type. A new HijackRegister will be automatically created.
+        /// </summary>
+        /// <param name="target">The type that is going to be mocked.</param>
+        public MockingHijacker(Type target) : this(target, new HijackRegister()) { }
+
+        /// <summary>
+        /// Creates a new MockingHijacker for the provided type.
+        /// </summary>
+        /// <param name="target">The type that is going to be mocked.</param>
+        /// <param name="hijackRegister">The HijackRegister to register the mocks</param>
         public MockingHijacker(Type target, IHijackRegister hijackRegister)
         {
             _target = target;
             _hijackRegister = hijackRegister;
+        }
+
+        public void Dispose()
+        {
+            _hijackRegister.Dispose();
         }
 
         private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, MethodInfo replacement)

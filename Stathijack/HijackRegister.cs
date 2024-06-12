@@ -4,12 +4,14 @@ using System.Reflection;
 
 namespace Stathijack
 {
-    public class HijackRegister : IHijackRegister, IDisposable
+    public class HijackRegister : IHijackRegister
     {
         private readonly IMethodMatcher _methodMatcher;
         private readonly ITypeMethodReplacer _typeMethodReplacer;
         private readonly IDynamicTypeFactory _dynamicTypeFactory;
+
         private HashSet<string> _hijackedClasses = new();
+        private bool _disposed;
 
         /// <summary>
         /// When enabled, it will try to duplicate the behavior of the original method, so that when the HijackRegister
@@ -18,10 +20,10 @@ namespace Stathijack
         /// </summary>
         public bool EnableExperimentalDefaultInvoking { get; set; }
 
-        public HijackRegister() : this(new MethodMatcher(), new TypeMethodReplacer(), new DynamicTypeFactory())
-        {
-
-        }
+        /// <summary>
+        /// Creates a new HijackRegister, used to control which methods of which types have been hijacked.
+        /// </summary>
+        public HijackRegister() : this(new MethodMatcher(), new TypeMethodReplacer(), new DynamicTypeFactory()) { }
 
         internal HijackRegister(IMethodMatcher methodMatcher, ITypeMethodReplacer typeMethodReplacer, IDynamicTypeFactory dynamicTypeFactory)
         {
@@ -64,8 +66,15 @@ namespace Stathijack
 
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             foreach (var item in _hijackedClasses)
                 HijackedMethodController.RemoveHijack(item);
+
+            _disposed = true;
         }
 
         private void HijackMethod(MethodInfo targetMethod, MethodInfo hijackerMethod, object? target)
@@ -77,7 +86,7 @@ namespace Stathijack
 
             if (HijackedMethodController.MethodHasBeenHijacked(dynamicNamespaceFullName))
             {
-                HijackedMethodController.AppendHijack(hijackerMethod,target, dynamicNamespaceFullName);
+                HijackedMethodController.AppendHijack(hijackerMethod, target, dynamicNamespaceFullName);
                 return;
             }
 

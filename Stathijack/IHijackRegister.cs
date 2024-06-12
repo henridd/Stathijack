@@ -2,7 +2,7 @@
 
 namespace Stathijack
 {
-    public interface IHijackRegister
+    public interface IHijackRegister : IDisposable
     {
         /// <summary>
         /// Register a class as a hijacker. It will scan the hijacker for methods with the same name and parameters as in the target
