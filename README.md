@@ -5,8 +5,7 @@ Stathijack is a tool that allows developers to either mock or replace static cla
 
 ## Usage
 ```csharp
-using var hijacker = new HijackRegister();
-var mockingHijacker = new MockingHijacker(typeof(StaticClassUnderTest), hijacker);
+using var mockingHijacker = new MockingHijacker(typeof(StaticClassUnderTest));
 mockingHijacker.MockMethod("MethodName", (string nameOfTheParameter) =>
 {
   //Some logic

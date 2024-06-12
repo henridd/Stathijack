@@ -30,8 +30,7 @@ namespace Stathijack.Samples
         {
             // Arrange
             var expectedName = "The actual name";
-            using var hijacker = new HijackRegister();
-            var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+            using var mockingHijacker = new MockingHijacker(typeof(Factory));
             mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = "Whoops this wont match" }; });
             var factoryConsumer = new FactoryConsumer();
 
@@ -53,8 +52,7 @@ namespace Stathijack.Samples
             const string namePrefix = "FAKE"; // Note that it must be const
             const string expectedName = "The actual name"; // Note that it must be const
 
-            using var hijacker = new HijackRegister();
-            var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+            using var mockingHijacker = new MockingHijacker(typeof(Factory));
             mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (string name, int _) => { return new Entity() { Name = namePrefix + expectedName }; });
             var factoryConsumer = new FactoryConsumer();
 
@@ -76,9 +74,8 @@ namespace Stathijack.Samples
             var factoryConsumer = new FactoryConsumer();
 
             // First time mocking
-            using (var hijacker = new HijackRegister())
-            {
-                var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+            using (var mockingHijacker = new MockingHijacker(typeof(Factory)))
+            {                
                 mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = firstExpectedName }; });
 
                 var firstEntity = factoryConsumer.UseFactory();
@@ -90,9 +87,8 @@ namespace Stathijack.Samples
             Assert.That(realEntity.Name, Is.EqualTo(realEntityName));
 
             // Use a different mock
-            using (var hijacker = new HijackRegister())
-            {
-                var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
+            using (var mockingHijacker = new MockingHijacker(typeof(Factory)))
+            {                
                 mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = secondExpectedName }; });
 
                 var secondEntity = factoryConsumer.UseFactory();
