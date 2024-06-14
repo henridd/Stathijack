@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Stathijack.Exceptions;
+using System.Reflection;
 
 namespace Stathijack
 {
@@ -9,7 +10,30 @@ namespace Stathijack
         // This method must be public.
         public static object? Invoke(object?[]? parameters)
         {
-            var dynamicNamespaceFullName = (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().DeclaringType.FullName;
+            var stackTrace = new System.Diagnostics.StackTrace();
+            var firstFrame = stackTrace.GetFrame(1);
+            if (firstFrame == null)
+            {
+                throw new HijackedMethodInvocationException("Unable to identify the hijacked type when invoking");
+            }
+
+            var targetMethodInfo = firstFrame.GetMethod();
+            if (targetMethodInfo == null)
+            {
+                throw new HijackedMethodInvocationException("Unable to get information about the calling method. Analyzed stack frame: " + firstFrame.ToString());
+            }
+
+            var declaringType = targetMethodInfo.DeclaringType;
+            if (declaringType == null)
+            {
+                throw new HijackedMethodInvocationException("The calling method does not have a declared type. Method: " + targetMethodInfo.Name);
+            }
+
+            var dynamicNamespaceFullName = declaringType.FullName;
+            if (dynamicNamespaceFullName == null)
+            {
+                throw new HijackedMethodInvocationException("Unable to obtain the full name of the declaring type. Type: " + declaringType.Name);
+            }
 
             var methodExecutionInfo = _hijackedMethods[dynamicNamespaceFullName].GetMethodToInvoke();
 
@@ -21,7 +45,7 @@ namespace Stathijack
 
         internal static MethodInfo GetRootMethodInfo()
         {
-            return typeof(HijackedMethodController).GetMethod(nameof(Invoke), BindingFlags.Public | BindingFlags.Static);
+            return typeof(HijackedMethodController).GetMethod(nameof(Invoke), BindingFlags.Public | BindingFlags.Static)!;
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace Stathijack.Mocking
         public void MockMethod<T1, T2, T3, T4, T5, TOut>(string methodName, Func<T1, T2, T3, T4, T5, TOut> function)
             => DoMockMethod(methodName, function.Method, function.Target);
 
-        private void DoMockMethod(string methodName, MethodInfo method, object target)
+        private void DoMockMethod(string methodName, MethodInfo method, object? target)
         {
             if (string.IsNullOrWhiteSpace(methodName))
                 throw new ArgumentException("Method name cannot be null", nameof(methodName));

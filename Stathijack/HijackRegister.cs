@@ -1,4 +1,5 @@
 ﻿using Stathijack.Dynamic;
+using Stathijack.Exceptions;
 using Stathijack.Replacer;
 using System.Reflection;
 
@@ -53,7 +54,7 @@ namespace Stathijack
         }
 
         /// <inheritdoc/>
-        public void Register(IEnumerable<MethodReplacementMapping> mappings, object target)
+        public void Register(IEnumerable<MethodReplacementMapping> mappings, object? target)
         {
             if (mappings == null)
                 throw new ArgumentNullException("A valid list of mappings must be provided", nameof(mappings));
@@ -81,7 +82,23 @@ namespace Stathijack
         {
             var hijackType = _dynamicTypeFactory.GenerateMockTypeForMethod(targetMethod, HijackedMethodController.GetRootMethodInfo());
             var invokeMethodInfo = hijackType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Static);
-            var dynamicNamespaceFullName = invokeMethodInfo.DeclaringType.FullName;
+            if (invokeMethodInfo == null)
+            {
+                throw new MethodHijackingException("Unable to find the Invoke method in the generated mock type");
+            }
+
+            var declaringType = invokeMethodInfo.DeclaringType;
+            if (declaringType == null)
+            {
+                throw new MethodHijackingException("The generated Invoke method has no declaring type");
+            }
+
+            var dynamicNamespaceFullName = declaringType.FullName;
+            if (dynamicNamespaceFullName == null)
+            {
+                throw new MethodHijackingException("The FullName of the generated mock type is null");
+            }
+
             _typeMethodReplacer.Replace(targetMethod, invokeMethodInfo);
 
             if (HijackedMethodController.MethodHasBeenHijacked(dynamicNamespaceFullName))
@@ -93,6 +110,11 @@ namespace Stathijack
             if (EnableExperimentalDefaultInvoking)
             {
                 var invokeDefaultMethodInfo = hijackType.GetMethod("InvokeDefault", BindingFlags.Public | BindingFlags.Static);
+                if (invokeDefaultMethodInfo == null)
+                {
+                    throw new MethodHijackingException("Unable to find the InvokeDefault method in the generated mock type");
+                }
+
                 HijackedMethodController.AddNewHijack(invokeDefaultMethodInfo, hijackerMethod, target, dynamicNamespaceFullName);
             }
             else
@@ -100,7 +122,7 @@ namespace Stathijack
                 HijackedMethodController.AddNewHijack(hijackerMethod, target, dynamicNamespaceFullName);
             }
 
-            _hijackedClasses.Add(invokeMethodInfo.DeclaringType.FullName);
+            _hijackedClasses.Add(dynamicNamespaceFullName);
         }
     }
 }

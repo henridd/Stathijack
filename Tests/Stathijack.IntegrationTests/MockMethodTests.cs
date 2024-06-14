@@ -129,7 +129,7 @@ namespace Stathijack.IntegrationTests
 
         private class FakeClass
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
             public int SomeValue { get; set; }
         }
     }

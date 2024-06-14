@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Stathijack.Exceptions;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Stathijack.Dynamic
@@ -30,7 +31,13 @@ namespace Stathijack.Dynamic
 
             ModuleBuilder moduleBuilder = asmBuilder.DefineDynamicModule(asmName.Name);
 
-            var dynamicTypeName = $"{asmName.Name}.{methodToHijack.DeclaringType.FullName}.{methodToHijack.Name}";
+            var declaringType = methodToHijack.DeclaringType;
+            if (declaringType == null)
+            {
+                throw new MockTypeGenerationException($"The method {methodToHijack.Name} has no declaring type");
+            }
+
+            var dynamicTypeName = $"{asmName.Name}.{declaringType.FullName}.{methodToHijack.Name}";
 
             return moduleBuilder.DefineType(dynamicTypeName, TypeAttributes.Public);
         }

@@ -78,7 +78,7 @@ namespace Stathijack.UnitTests.MethodMatcherTests
             var matcher = new MethodMatcher();
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => matcher.MatchMethods(null, typeof(TypeWithSameMethodsButDifferentReturnTypeB), BindingFlags.Public | BindingFlags.Static));
+            Assert.Throws<ArgumentNullException>(() => matcher.MatchMethods(null!, typeof(TypeWithSameMethodsButDifferentReturnTypeB), BindingFlags.Public | BindingFlags.Static));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace Stathijack.UnitTests.MethodMatcherTests
             var matcher = new MethodMatcher();
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => matcher.MatchMethods(typeof(TypeWithSameMethodsButDifferentReturnTypeB), null, BindingFlags.Public | BindingFlags.Static));
+            Assert.Throws<ArgumentNullException>(() => matcher.MatchMethods(typeof(TypeWithSameMethodsButDifferentReturnTypeB), null!, BindingFlags.Public | BindingFlags.Static));
         }
 
         private static class TypeWithSameMethodsA
