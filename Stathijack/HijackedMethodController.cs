@@ -1,4 +1,5 @@
 ﻿using Stathijack.Exceptions;
+using Stathijack.Mocking;
 using System.Reflection;
 
 namespace Stathijack
@@ -37,7 +38,17 @@ namespace Stathijack
 
             var methodExecutionInfo = _hijackedMethods[dynamicNamespaceFullName].GetMethodToInvoke();
 
-            return methodExecutionInfo.Method.Invoke(methodExecutionInfo.Target, parameters);
+            var returnValue = methodExecutionInfo.Method.Invoke(methodExecutionInfo.Target, parameters);
+
+            RegisterInvocation(parameters, returnValue, dynamicNamespaceFullName);
+
+            return returnValue;
+        }
+
+        private static void RegisterInvocation(object?[]? parameters, object? returnValue, string dynamicNamespaceFullName)
+        {
+            var methodInvocationResult = new MethodInvocationResult(parameters, returnValue);
+            _hijackedMethods[dynamicNamespaceFullName].HijackedMethodData.RegisterInvocation(methodInvocationResult);
         }
 
         internal static bool MethodHasBeenHijacked(string dynamicNamespaceFullName)
@@ -49,31 +60,17 @@ namespace Stathijack
         }
 
         /// <summary>
-        /// Adds a new hijack, providing a clone of the original method.
-        /// </summary>
-        internal static void AddNewHijack(MethodInfo targetMethodClone, MethodInfo hijackerMethod, object? target, string dynamicNamespaceFullName)
-        {
-            if (!_hijackedMethods.ContainsKey(dynamicNamespaceFullName))
-            {
-                var hijackInfo = new MethodHijackInfo(new MethodExecutionInfo(target, targetMethodClone));
-
-                _hijackedMethods.Add(dynamicNamespaceFullName, hijackInfo);
-            }
-            _hijackedMethods[dynamicNamespaceFullName].AddHijack(new MethodExecutionInfo(target, hijackerMethod));
-        }
-
-        /// <summary>
         /// Adds a new hijack without providing a clone of the original method. Will throw an exception
         /// if the method is called after the hijack has been removed.
         /// </summary>
-        internal static void AddNewHijack(MethodInfo hijackerMethod, object? target, string dynamicNamespaceFullName)
-        {
-            if (!_hijackedMethods.ContainsKey(dynamicNamespaceFullName))
-            {
-                _hijackedMethods.Add(dynamicNamespaceFullName, new MethodHijackInfo());
-            }
-            _hijackedMethods[dynamicNamespaceFullName].AddHijack(new MethodExecutionInfo(target, hijackerMethod));
-        }
+        internal static void AddNewHijack(MethodInfo hijackerMethod, object? target, string dynamicNamespaceFullName, HijackedMethodData hijackedMethodData) 
+            => DoAddNewHijack(new MethodHijackInfo(hijackedMethodData), hijackerMethod, target, dynamicNamespaceFullName);
+
+        /// <summary>
+        /// Adds a new hijack, providing a clone of the original method.
+        /// </summary>
+        internal static void AddNewHijack(MethodInfo targetMethodClone, MethodInfo hijackerMethod, object? target, string dynamicNamespaceFullName, HijackedMethodData hijackedMethodData) 
+            => DoAddNewHijack(new MethodHijackInfo(new MethodExecutionInfo(target, targetMethodClone), hijackedMethodData), hijackerMethod, target, dynamicNamespaceFullName);
 
         internal static void AppendHijack(MethodInfo hijackerMethod, object? target, string dynamicNamespaceFullName)
         {
@@ -85,19 +82,39 @@ namespace Stathijack
             if (_hijackedMethods.ContainsKey(item))
             {
                 _hijackedMethods[item].ClearHijackStack();
+                _hijackedMethods[item].HijackedMethodData.ResetInvocations();
             }
         }
+
+        internal static HijackedMethodData GetHijackedMethodData(string dynamicNamespaceFullName)
+            => _hijackedMethods[dynamicNamespaceFullName].HijackedMethodData;
+
+        private static void DoAddNewHijack(MethodHijackInfo methodHijackInfo, MethodInfo hijackerMethod, object? target, string dynamicNamespaceFullName)
+        {
+            if (!_hijackedMethods.ContainsKey(dynamicNamespaceFullName))
+            {
+                _hijackedMethods.Add(dynamicNamespaceFullName, methodHijackInfo);
+            }
+
+            _hijackedMethods[dynamicNamespaceFullName].AddHijack(new MethodExecutionInfo(target, hijackerMethod));
+        }        
 
         private class MethodHijackInfo
         {
             private readonly MethodExecutionInfo? _targetMethodClone;
             private readonly Stack<MethodExecutionInfo> _hijackStack = new Stack<MethodExecutionInfo>();
 
-            public MethodHijackInfo() { }
+            public HijackedMethodData HijackedMethodData { get; }
 
-            public MethodHijackInfo(MethodExecutionInfo targetMethodClone)
+            public MethodHijackInfo(HijackedMethodData hijackedMethodData)
+            {
+                HijackedMethodData = hijackedMethodData;
+            }
+
+            public MethodHijackInfo(MethodExecutionInfo targetMethodClone, HijackedMethodData hijackedMethodData)
             {
                 _targetMethodClone = targetMethodClone;
+                HijackedMethodData = hijackedMethodData;
             }
 
             public void AddHijack(MethodExecutionInfo methodExecutionInfo)

@@ -29,10 +29,7 @@ namespace Stathijack.Mocking
             _hijackRegister.Dispose();
         }
 
-        private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, MethodInfo replacement)
-            => CreateMappingForAllMethods(methodName, null, replacement);
-
-        private List<MethodReplacementMapping> CreateMappingForAllMethods(string methodName, Type[]? parameterTypes, MethodInfo replacement)
+        private List<MethodReplacementMapping> CreateMappingForMethods(string methodName, Type[]? parameterTypes, MethodInfo replacement)
         {
             var mappings = new List<MethodReplacementMapping>();
             foreach (var method in _target.GetMethods())

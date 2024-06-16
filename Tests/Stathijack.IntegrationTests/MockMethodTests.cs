@@ -12,11 +12,11 @@ namespace Stathijack.IntegrationTests
             var expectedName = "The actual name";
             using var hijacker = new HijackRegister();
             var mockingHijacker = new MockingHijacker(typeof(Factory), hijacker);
-            mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = "Whoops this wont match" }; });
+            mockingHijacker.MockMethod(nameof(Factory.CreateEntityNonMatching), () => { return new Entity() { Name = "Whoops this wont match" }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
-            var entity = factoryConsumer.UseFactory(expectedName);
+            var entity = factoryConsumer.UseFactoryNonMatching(expectedName);
 
             // Assert
             Assert.That(entity.Name, Is.EqualTo(expectedName));

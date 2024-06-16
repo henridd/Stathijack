@@ -15,5 +15,11 @@
 
         public static Entity CreateEntity(CreateFactoryPayload createFactoryPayload)
             => new Entity() { Name = createFactoryPayload.Name, Id = createFactoryPayload.Id };
+
+        public static Entity CreateEntityNonMatching()
+            => new Entity() { Name = DefaultEntityName };
+
+        public static Entity CreateEntityNonMatching(string name)
+            => new Entity() { Name = name };
     }
 }

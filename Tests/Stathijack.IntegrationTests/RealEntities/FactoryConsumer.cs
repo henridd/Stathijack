@@ -13,5 +13,11 @@
 
         public Entity UseFactory(CreateFactoryPayload createFactoryPayload)
             => Factory.CreateEntity(createFactoryPayload);
+
+        public Entity UseFactoryNonMatching()
+            => Factory.CreateEntityNonMatching();
+
+        public Entity UseFactoryNonMatching(string name)
+            => Factory.CreateEntityNonMatching(name);
     }
 }
