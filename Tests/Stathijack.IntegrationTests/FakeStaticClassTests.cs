@@ -29,7 +29,7 @@ namespace Stathijack.IntegrationTests
             var factoryConsumer = new FactoryConsumer();
 
             // Act
-            var entity = factoryConsumer.UseFactory(expectedName);
+            var entity = factoryConsumer.UseFactoryNonMatching(expectedName);
 
             // Assert
             Assert.That(entity.Name, Is.EqualTo(expectedName));
@@ -63,6 +63,9 @@ namespace Stathijack.IntegrationTests
 
             public static Entity CreateEntity()
                 => new Entity() { Name = DefaultName };
+
+            public static Entity CreateEntityNonMatching()
+                => new Entity() { Name = DefaultName };            
         }
 
         private class MockFactoryB

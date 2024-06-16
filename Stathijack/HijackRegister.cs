@@ -1,5 +1,6 @@
 ﻿using Stathijack.Dynamic;
 using Stathijack.Exceptions;
+using Stathijack.Mocking;
 using Stathijack.Replacer;
 using System.Reflection;
 
@@ -34,11 +35,11 @@ namespace Stathijack
         }
 
         /// <inheritdoc/>
-        public void Register(Type target, Type hijacker)
+        public IEnumerable<HijackedMethodData> Register(Type target, Type hijacker)
             => Register(target, hijacker, BindingFlags.Static | BindingFlags.Public);
 
         /// <inheritdoc/>
-        public void Register(Type target, Type hijacker, BindingFlags bindingFlags)
+        public IEnumerable<HijackedMethodData> Register(Type target, Type hijacker, BindingFlags bindingFlags)
         {
             if (target.Equals(hijacker))
             {
@@ -47,22 +48,16 @@ namespace Stathijack
 
             var methodsToHijack = _methodMatcher.MatchMethods(target, hijacker, bindingFlags);
 
-            foreach (var info in methodsToHijack)
-            {
-                HijackMethod(info.TargetMethod, info.HijackerMethod, null);
-            }
+            return RegisterMappedHijacks(methodsToHijack, null);
         }
 
         /// <inheritdoc/>
-        public void Register(IEnumerable<MethodReplacementMapping> mappings, object? target)
+        public IEnumerable<HijackedMethodData> Register(IEnumerable<MethodReplacementMapping> mappings, object? target)
         {
             if (mappings == null)
                 throw new ArgumentNullException("A valid list of mappings must be provided", nameof(mappings));
 
-            foreach (var mapping in mappings)
-            {
-                HijackMethod(mapping.TargetMethod, mapping.HijackerMethod, target);
-            }
+            return RegisterMappedHijacks(mappings, target);
         }
 
         public void Dispose()
@@ -78,7 +73,18 @@ namespace Stathijack
             _disposed = true;
         }
 
-        private void HijackMethod(MethodInfo targetMethod, MethodInfo hijackerMethod, object? target)
+        private IEnumerable<HijackedMethodData> RegisterMappedHijacks(IEnumerable<MethodReplacementMapping> methodsToHijack, object? target)
+        {
+            var hijackedMethodDataList = new List<HijackedMethodData>();
+            foreach (var info in methodsToHijack)
+            {
+                hijackedMethodDataList.Add(HijackMethod(info.TargetMethod, info.HijackerMethod, target));
+            }
+
+            return hijackedMethodDataList;
+        }
+
+        private HijackedMethodData HijackMethod(MethodInfo targetMethod, MethodInfo hijackerMethod, object? target)
         {
             var hijackType = _dynamicTypeFactory.GenerateMockTypeForMethod(targetMethod, HijackedMethodController.GetRootMethodInfo());
             var invokeMethodInfo = hijackType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Static);
@@ -101,12 +107,23 @@ namespace Stathijack
 
             _typeMethodReplacer.Replace(targetMethod, invokeMethodInfo);
 
+            _hijackedClasses.Add(dynamicNamespaceFullName);
+
             if (HijackedMethodController.MethodHasBeenHijacked(dynamicNamespaceFullName))
             {
                 HijackedMethodController.AppendHijack(hijackerMethod, target, dynamicNamespaceFullName);
-                return;
+                return HijackedMethodController.GetHijackedMethodData(dynamicNamespaceFullName);
             }
 
+            var hijackedMethodData = new HijackedMethodData();
+
+            AddNewHijack(hijackerMethod, target, hijackType, dynamicNamespaceFullName, hijackedMethodData);
+
+            return hijackedMethodData;
+        }
+
+        private void AddNewHijack(MethodInfo hijackerMethod, object? target, Type hijackType, string dynamicNamespaceFullName, HijackedMethodData hijackedMethodData)
+        {
             if (EnableExperimentalDefaultInvoking)
             {
                 var invokeDefaultMethodInfo = hijackType.GetMethod("InvokeDefault", BindingFlags.Public | BindingFlags.Static);
@@ -115,14 +132,12 @@ namespace Stathijack
                     throw new MethodHijackingException("Unable to find the InvokeDefault method in the generated mock type");
                 }
 
-                HijackedMethodController.AddNewHijack(invokeDefaultMethodInfo, hijackerMethod, target, dynamicNamespaceFullName);
+                HijackedMethodController.AddNewHijack(invokeDefaultMethodInfo, hijackerMethod, target, dynamicNamespaceFullName, hijackedMethodData);
             }
             else
             {
-                HijackedMethodController.AddNewHijack(hijackerMethod, target, dynamicNamespaceFullName);
+                HijackedMethodController.AddNewHijack(hijackerMethod, target, dynamicNamespaceFullName, hijackedMethodData);
             }
-
-            _hijackedClasses.Add(dynamicNamespaceFullName);
         }
     }
 }

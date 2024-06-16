@@ -12,5 +12,11 @@
 
         public static Entity CreateEntity(string name, int id)
             => new Entity() { Name = name, Id = id };
+
+        public static Entity CreateEntityNonMatching()
+            => new Entity() { Name = DefaultEntityName };
+
+        public static Entity CreateEntityNonMatching(string name)
+            => new Entity() { Name = name };
     }
 }

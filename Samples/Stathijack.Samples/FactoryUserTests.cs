@@ -7,6 +7,9 @@ namespace Stathijack.Samples
 {
     internal class FactoryUserTests
     {
+        /// <summary>
+        /// In this example, the behavior of the static class gets replaced by another one
+        /// </summary>
         [Test]
         public void UsingAFakeClass()
         {
@@ -31,11 +34,11 @@ namespace Stathijack.Samples
             // Arrange
             var expectedName = "The actual name";
             using var mockingHijacker = new MockingHijacker(typeof(Factory));
-            mockingHijacker.MockMethod(nameof(Factory.CreateEntity), () => { return new Entity() { Name = "Whoops this wont match" }; });
+            mockingHijacker.MockMethod(nameof(Factory.CreateEntityNonMatching), () => { return new Entity() { Name = "Whoops this wont match" }; });
             var factoryConsumer = new FactoryConsumer();
 
             // Act
-            var entity = factoryConsumer.UseFactory(expectedName);
+            var entity = factoryConsumer.UseFactoryNonMatching(expectedName);
 
             // Assert
             Assert.That(entity.Name, Is.EqualTo(expectedName));
@@ -63,13 +66,41 @@ namespace Stathijack.Samples
             Assert.That(entity.Name, Is.EqualTo(namePrefix + expectedName));
         }
 
+        /// <summary>
+        /// In this example we verify what were the invocations on the mocked method.
+        /// </summary>
+        [Test]
+        public void VerifyingMethodInvocations()
+        {
+            // Arrange
+            const string expectedName = "The actual name"; // Note that it must be const
+
+            using var mockingHijacker = new MockingHijacker(typeof(Factory));
+            var mockedMethodData = mockingHijacker.MockMethod(nameof(Factory.CreateEntity), (string name) => { return new Entity() { Name = name }; });
+            var factoryConsumer = new FactoryConsumer();
+
+            // Act
+            var result = factoryConsumer.UseFactory(expectedName);
+
+            // Assert
+            Assert.That(mockedMethodData.Invocations.Count, Is.EqualTo(1));
+
+            var invocationResult = (Entity)mockedMethodData.Invocations.First().ReturnValue!;
+            Assert.That(invocationResult!.Name, Is.EqualTo(result.Name));
+
+            var invocationParameters = mockedMethodData.Invocations.First().Parameters!;
+            Assert.That(invocationParameters.First(), Is.EqualTo(expectedName));
+        }
+
+        /// <summary>
+        /// In this example we dispose an existing mock, and then we replace it by another one
+        /// </summary>
         [Test]
         public void ReplacingTheHijacker()
         {
             // Arrange
             const string firstExpectedName = "The first name"; // Note that it must be const
             const string secondExpectedName = "The second name"; // Note that it must be const
-            var realEntityName = "I am real";
 
             var factoryConsumer = new FactoryConsumer();
 
@@ -81,10 +112,6 @@ namespace Stathijack.Samples
                 var firstEntity = factoryConsumer.UseFactory();
                 Assert.That(firstEntity.Name, Is.EqualTo(firstExpectedName));
             }
-
-            // Ensure that the method is executing normally again
-            var realEntity = factoryConsumer.UseFactory(realEntityName);
-            Assert.That(realEntity.Name, Is.EqualTo(realEntityName));
 
             // Use a different mock
             using (var mockingHijacker = new MockingHijacker(typeof(Factory)))
