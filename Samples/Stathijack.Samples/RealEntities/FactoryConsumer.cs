@@ -10,5 +10,11 @@
 
         public Entity UseFactory(string name, int id)
             => Factory.CreateEntity(name, id);
+
+        public Entity UseFactoryNonMatching()
+            => Factory.CreateEntityNonMatching();
+
+        public Entity UseFactoryNonMatching(string name)
+            => Factory.CreateEntityNonMatching(name);
     }
 }
