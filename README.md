@@ -4,12 +4,23 @@
 Stathijack is a tool that allows developers to either mock or replace static classes in unit or integration tests, without any changes to your production code whatsoever. You can easily replace the logic of static method to a simple Func, allowing you to use static classes in your code without fearing how that's going to be tested. This is possible by "hijacking" the original method, so whenever your code tries to access the static class, it is redirected to the specified mock or fake class.
 
 ## Usage
+### Mocking a static method
 ```csharp
 using var mockingHijacker = new MockingHijacker(typeof(StaticClassUnderTest));
 mockingHijacker.MockMethod("MethodName", (string nameOfTheParameter) =>
 {
   //Some logic
 });
+```
+
+### Inspecting the invocations
+```csharp
+using var mockingHijacker = new MockingHijacker(typeof(StaticClassUnderTest));
+var mockedMethodData = mockingHijacker.MockMethod(...);
+
+// Method calling logic
+
+Assert.That(mockedMethodData.Invocations.Count, Is.EqualTo(1));
 ```
 For more information and usages, check the Samples project and this article: https://intodot.net/mocking-static-classes-in-net-introducing-stathijack/
 
