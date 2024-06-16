@@ -1,5 +1,4 @@
-﻿using Stathijack.Mocking;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Stathijack
 {

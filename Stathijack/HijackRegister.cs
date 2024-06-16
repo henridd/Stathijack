@@ -1,6 +1,5 @@
 ﻿using Stathijack.Dynamic;
 using Stathijack.Exceptions;
-using Stathijack.Mocking;
 using Stathijack.Replacer;
 using System.Reflection;
 
