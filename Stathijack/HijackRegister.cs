@@ -1,6 +1,7 @@
 ﻿using Stathijack.Dynamic;
 using Stathijack.Exceptions;
 using Stathijack.Replacer;
+using Stathijack.Wrappers;
 using System.Reflection;
 
 namespace Stathijack
@@ -83,7 +84,7 @@ namespace Stathijack
             return hijackedMethodDataList;
         }
 
-        private HijackedMethodData HijackMethod(MethodInfo targetMethod, MethodInfo hijackerMethod, object? target)
+        private HijackedMethodData HijackMethod(IMethodInfo targetMethod, IMethodInfo hijackerMethod, object? target)
         {
             var hijackType = _dynamicTypeFactory.GenerateMockTypeForMethod(targetMethod, HijackedMethodController.GetRootMethodInfo());
             var invokeMethodInfo = hijackType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Static);
@@ -104,7 +105,7 @@ namespace Stathijack
                 throw new MethodHijackingException("The FullName of the generated mock type is null");
             }
 
-            _typeMethodReplacer.Replace(targetMethod, invokeMethodInfo);
+            _typeMethodReplacer.Replace(targetMethod.MethodInfo, invokeMethodInfo.MethodInfo);
 
             _hijackedClasses.Add(dynamicNamespaceFullName);
 
@@ -121,7 +122,7 @@ namespace Stathijack
             return hijackedMethodData;
         }
 
-        private void AddNewHijack(MethodInfo hijackerMethod, object? target, Type hijackType, string dynamicNamespaceFullName, HijackedMethodData hijackedMethodData)
+        private void AddNewHijack(IMethodInfo hijackerMethod, object? target, IType hijackType, string dynamicNamespaceFullName, HijackedMethodData hijackedMethodData)
         {
             if (EnableExperimentalDefaultInvoking)
             {
@@ -131,7 +132,7 @@ namespace Stathijack
                     throw new MethodHijackingException("Unable to find the InvokeDefault method in the generated mock type");
                 }
 
-                HijackedMethodController.AddNewHijack(invokeDefaultMethodInfo, hijackerMethod, target, dynamicNamespaceFullName, hijackedMethodData);
+                HijackedMethodController.AddNewHijack(new MethodInfoWrapper(invokeDefaultMethodInfo.MethodInfo), hijackerMethod, target, dynamicNamespaceFullName, hijackedMethodData);
             }
             else
             {

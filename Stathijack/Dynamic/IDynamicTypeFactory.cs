@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
+using Stathijack.Wrappers;
 
 namespace Stathijack.Dynamic
 {
     internal interface IDynamicTypeFactory
     {
-        Type GenerateMockTypeForMethod(MethodInfo targetMethod, MethodInfo hijackMethod);
+        IType GenerateMockTypeForMethod(IMethodInfo targetMethod, IMethodInfo hijackMethod);
     }
 }

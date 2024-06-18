@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿using Stathijack.Wrappers;
 
 namespace Stathijack
 {
-    public record MethodReplacementMapping(MethodInfo TargetMethod, MethodInfo HijackerMethod);
+    public record MethodReplacementMapping(IMethodInfo TargetMethod, IMethodInfo HijackerMethod);
 }

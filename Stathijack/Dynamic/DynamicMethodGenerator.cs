@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Stathijack.Wrappers;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Stathijack.Dynamic
@@ -8,13 +9,13 @@ namespace Stathijack.Dynamic
         /// <summary>
         /// Creates the Invoke method, which routes method calls to the hijackMethod
         /// </summary>
-        internal static void GenerateInvokeMethod(TypeBuilder typeBuilder, Type[] parameters, Type returnType, MethodInfo hijackMethod)
+        internal static void GenerateInvokeMethod(TypeBuilder typeBuilder, IType[] parameters, IType returnType, IMethodInfo hijackMethod)
         {
             var methodBuilder = typeBuilder.DefineMethod(
                                                  "Invoke",
                                                  MethodAttributes.Public | MethodAttributes.Static,
-                                                 returnType,
-                                                 parameters);
+                                                 returnType.Type,
+                                                 parameters.Select(x => x.Type).ToArray());
 
             var ILout = methodBuilder.GetILGenerator();
 
@@ -38,7 +39,7 @@ namespace Stathijack.Dynamic
                 // Box the argument if it's a value type
                 if (parameters[i].IsValueType)
                 {
-                    ILout.Emit(OpCodes.Box, parameters[i]);
+                    ILout.Emit(OpCodes.Box, parameters[i].Type);
                 }
 
                 ILout.Emit(OpCodes.Stelem_Ref); // Store the argument in the object array
@@ -46,14 +47,14 @@ namespace Stathijack.Dynamic
 
             ILout.Emit(OpCodes.Ldloc_0); // Load the object array
 
-            ILout.EmitCall(OpCodes.Call, hijackMethod, null);
+            ILout.EmitCall(OpCodes.Call, hijackMethod.MethodInfo, null);
             ILout.Emit(OpCodes.Ret);
         }
 
         /// <summary>
         /// Duplicates the original method logic, so the default logic can be restored
         /// </summary>
-        internal static void GenerateInvokeDefaultMethod(TypeBuilder typeBuilder, Type[] parameters, Type returnType, MethodInfo originalMethod)
+        internal static void GenerateInvokeDefaultMethod(TypeBuilder typeBuilder, IType[] parameters, IType returnType, IMethodInfo originalMethod)
         {
             var methodBody = originalMethod.GetMethodBody();
             var ilBytes = methodBody.GetILAsByteArray();
@@ -61,8 +62,8 @@ namespace Stathijack.Dynamic
             var methodBuilder = typeBuilder.DefineMethod(
                                      "InvokeDefault",
                                      MethodAttributes.Public | MethodAttributes.Static,
-                                     returnType,
-                                     parameters);
+                                     returnType.Type,
+                                     parameters.Select(x => x.Type).ToArray());
 
             var ILout = methodBuilder.GetILGenerator();
 

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Stathijack.Wrappers;
+using System.Reflection;
 
 namespace Stathijack
 {
@@ -24,7 +25,7 @@ namespace Stathijack
                 if (methodToReplace.ReturnParameter.ParameterType != method.ReturnParameter.ParameterType)
                     continue;
 
-                matchedMethods.Add(new MethodReplacementMapping(method, methodToReplace));
+                matchedMethods.Add(new MethodReplacementMapping(new MethodInfoWrapper(method), new MethodInfoWrapper(methodToReplace)));
             }
 
             return matchedMethods;

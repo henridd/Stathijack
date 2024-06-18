@@ -1,4 +1,5 @@
 ﻿using Stathijack.Exceptions;
+using Stathijack.Wrappers;
 using System.Reflection;
 
 namespace Stathijack.Mocking
@@ -85,7 +86,7 @@ namespace Stathijack.Mocking
                 if (parameterTypes != null && !parameterTypes.SequenceEqual(method.GetParameters().Select(x => x.ParameterType)))
                     continue;
 
-                mappings.Add(new MethodReplacementMapping(method, replacement));
+                mappings.Add(new MethodReplacementMapping(new MethodInfoWrapper(method), new MethodInfoWrapper(replacement)));
             }
             return mappings;
         }
